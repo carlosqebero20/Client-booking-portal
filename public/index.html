@@ -19,7 +19,13 @@
 
   <header class="nav-header">
     <a href="#" class="brand-logo">Yordanos</a>
-    <ul class="nav-links">
+    
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+      <i data-lucide="menu"></i>
+    </button>
+
+    <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
       <li><a href="#clients">Brands</a></li>
       <li><a href="#work">Sample Work</a></li>
@@ -27,7 +33,8 @@
       <li><a href="#services">Services</a></li>
       <li><a href="#booking">Bookings</a></li>
     </ul>
-    <a href="#booking" class="btn-feminine">Book Model</a>
+    
+    <a href="#booking" class="btn-feminine desktop-cta">Book Model</a>
   </header>
 
   <section id="about" class="container hero-section">
@@ -342,6 +349,23 @@
   <script>
     // Initialize Lucide Icons
     lucide.createIcons();
+
+    // Mobile Menu Toggle Functionality
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (mobileMenuToggle && navLinks) {
+      mobileMenuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+      });
+
+      // Close menu when clicking any nav link
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('active');
+        });
+      });
+    }
   </script>
 </body>
 </html>
