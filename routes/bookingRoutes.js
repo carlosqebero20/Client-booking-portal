@@ -12,7 +12,6 @@ const storage = multer.diskStorage({
         cb(null, path.join(__dirname, '../public/uploads'));
     },
     filename: (req, file, cb) => {
-        // Temporary unique name initially
         cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
     }
 });
@@ -34,10 +33,11 @@ const upload = multer({
     }
 });
 
+// Configure transporter to send notifications directly to carlosqebero20@gmail.com
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
+        user: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
         pass: process.env.EMAIL_PASS
     }
 });
@@ -65,24 +65,22 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
             await db.query(query, [name, projectType, rating, comment]);
 
             mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
+                from: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
+                to: 'carlosqebero20@gmail.com',
                 subject: `New Review from ${name}`,
                 text: `Client Name: ${name}\nProject Type: ${projectType}\nRating: ${rating}\nComment: ${comment}`
             };
         } else {
-            // If a file was uploaded, rename it using the company/client name and date
             if (req.file) {
                 const cleanName = name ? name.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'client';
-                const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const currentDate = new Date().toISOString().split('T')[0];
                 const uniqueId = Date.now().toString().slice(-4);
-                const ext = path.extname(req.file.originalname);
+                const ext = path.extname(file.originalname);
                 
                 const newFilename = `${cleanName}-${currentDate}-${uniqueId}${ext}`;
                 const oldPath = req.file.path;
                 const newPath = path.join(__dirname, '../public/uploads', newFilename);
 
-                // Rename the file on disk
                 fs.renameSync(oldPath, newPath);
                 filePath = `/uploads/${newFilename}`;
             }
@@ -91,15 +89,15 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
             await db.query(query, [name, projectType, email, message, filePath]);
 
             mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
+                from: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
+                to: 'carlosqebero20@gmail.com',
                 subject: `New Booking Request from ${name}`,
                 text: `Client Name: ${name}\nProject Type: ${projectType}\nEmail: ${email}\nMessage: ${message}\nAttached File: ${filePath ? 'Yes (' + filePath + ')' : 'None'}`
             };
         }
 
         await transporter.sendMail(mailOptions);
-        return res.status(201).json({ success: true, message: 'Saved to database and email notification sent!' });
+        return res.status(201).json({ success: true, message: 'Saved to database and email notification sent to carlosqebero20@gmail.com!' });
     } catch (err) {
         console.error(err);
         if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
