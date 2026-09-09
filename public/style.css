@@ -64,6 +64,7 @@ body {
   display: flex;
   list-style: none;
   gap: 32px;
+  align-items: center;
 }
 
 .nav-links a {
@@ -94,6 +95,7 @@ body {
   border: none;
   cursor: pointer;
   display: inline-block;
+  text-align: center;
 }
 
 .btn-feminine:hover {
@@ -257,6 +259,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: 0.3s;
+  text-decoration: none;
 }
 
 .link-btn:hover {
@@ -284,7 +287,7 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  border-top: 1px solid rgba(0,0,0,0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
   padding-top: 14px;
 }
 
@@ -351,7 +354,7 @@ body {
   left: 0;
   width: 100%;
   padding: 30px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   color: var(--white);
 }
 
@@ -477,7 +480,8 @@ body {
   white-space: nowrap;
 }
 
-.tab-btn.active, .tab-btn:hover {
+.tab-btn.active,
+.tab-btn:hover {
   background: var(--text-dark);
   color: var(--white);
   border-color: var(--text-dark);
