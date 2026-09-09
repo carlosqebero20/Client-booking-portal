@@ -12,6 +12,36 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Automatically ensure tables exist on startup
+async function ensureTablesExist() {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                project_type VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                message TEXT,
+                file_path VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS reviews (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                project_type VARCHAR(255) NOT NULL,
+                rating INT NOT NULL,
+                comment TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('Database tables verified/created successfully.');
+    } catch (err) {
+        console.error('Error ensuring tables exist:', err);
+    }
+}
+
 // Serve Public Static Directory (finds index.html, style.css, main.js, and images inside 'public')
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -66,8 +96,9 @@ function cleanOldUploads() {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Server listening on port ${PORT}`);
-    // Run the file cleanup check every time the server boots up
+    // Ensure tables exist and run file cleanup when the server boots up
+    await ensureTablesExist();
     cleanOldUploads();
 });
