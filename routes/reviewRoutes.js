@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     }
 });
@@ -24,8 +24,8 @@ router.post('/', async (req, res) => {
         
         // 2. Prepare the email notification content
         const mailOptions = {
-            from: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
-            to: 'carlosqebero20@gmail.com',
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_USER,
             subject: `New Review from ${name}!`,
             text: `You have received a new review:\n\nName: ${name}\nProject Type: ${projectType}\nRating: ${rating}\nComment: ${comment}`
         };

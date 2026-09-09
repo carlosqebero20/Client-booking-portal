@@ -37,7 +37,7 @@ const upload = multer({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     }
 });
@@ -65,8 +65,8 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
             await db.query(query, [name, projectType, rating, comment]);
 
             mailOptions = {
-                from: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
-                to: 'carlosqebero20@gmail.com',
+                from: process.env.EMAIL_USER,
+                to: process.env.EMAIL_USER,
                 subject: `New Review from ${name}`,
                 text: `Client Name: ${name}\nProject Type: ${projectType}\nRating: ${rating}\nComment: ${comment}`
             };
@@ -75,7 +75,7 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
                 const cleanName = name ? name.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'client';
                 const currentDate = new Date().toISOString().split('T')[0];
                 const uniqueId = Date.now().toString().slice(-4);
-                const ext = path.extname(file.originalname);
+                const ext = path.extname(req.file.originalname); // Fixed: changed file to req.file
                 
                 const newFilename = `${cleanName}-${currentDate}-${uniqueId}${ext}`;
                 const oldPath = req.file.path;
@@ -89,8 +89,8 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
             await db.query(query, [name, projectType, email, message, filePath]);
 
             mailOptions = {
-                from: process.env.EMAIL_USER || 'carlosqebero20@gmail.com',
-                to: 'carlosqebero20@gmail.com',
+                from: process.env.EMAIL_USER,
+                to: process.env.EMAIL_USER,
                 subject: `New Booking Request from ${name}`,
                 text: `Client Name: ${name}\nProject Type: ${projectType}\nEmail: ${email}\nMessage: ${message}\nAttached File: ${filePath ? 'Yes (' + filePath + ')' : 'None'}`
             };
@@ -99,7 +99,7 @@ router.post('/', upload.single('briefFile'), async (req, res) => {
         await transporter.sendMail(mailOptions);
         return res.status(201).json({ success: true, message: 'Saved to database and email notification sent to carlosqebero20@gmail.com!' });
     } catch (err) {
-        console.error(err);
+        console.error('Detailed Booking Error:', err);
         if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({ success: false, message: 'File size exceeds the 5MB limit.' });
         }
