@@ -4,6 +4,7 @@ const db = require('../db');
 
 router.post('/', async (req, res) => {
     try {
+        console.log("Received review request body:", req.body);
         const { name, projectType, rating, comment } = req.body;
         
         const [result] = await db.query(
@@ -13,8 +14,8 @@ router.post('/', async (req, res) => {
         
         res.status(201).json({ message: 'Review added successfully', id: result.insertId });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Detailed Review Error:', err);
+        res.status(500).json({ message: 'Server Error', error: err.message });
     }
 });
 

@@ -474,6 +474,7 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: 0.3s;
+  white-space: nowrap;
 }
 
 .tab-btn.active, .tab-btn:hover {
@@ -721,8 +722,9 @@ footer {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 18px;
     z-index: 1000;
+    padding: 30px 20px;
   }
 
   .nav-links.active {
@@ -730,7 +732,21 @@ footer {
   }
 
   .nav-links a {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    padding: 6px 0;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+    padding: 0 16px;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .tab-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
 
   .hero-section {

@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve Public Static Directory (finds index.html, style.css, main.js, and images inside 'public')
+// Serve Public Static Directory (finds index.html, style.css, script.js, and images inside 'public')
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes

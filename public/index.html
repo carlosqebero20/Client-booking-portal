@@ -3,369 +3,314 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yordanos | Creative Portfolio & Operations</title>
-
+  <title>Yordanos | Digital Portfolio & Media Kit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;0,6..96,700;1,6..96,400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+  <!-- Navigation Header -->
   <header class="nav-header">
     <a href="#" class="brand-logo">Yordanos</a>
-    
-    <!-- Mobile Menu Toggle Button -->
-    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
-      <i data-lucide="menu"></i>
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#collaborations">Collaborations</a></li>
+        <li><a href="#lookbook">Lookbook</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#reviews">Testimonials</a></li>
+        <li><a href="#contact" class="desktop-cta btn-feminine">Book / Inquire</a></li>
+      </ul>
+    </nav>
+    <button class="mobile-menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars"></i>
     </button>
-
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#about">About</a></li>
-      <li><a href="#clients">Brands</a></li>
-      <li><a href="#work">Sample Work</a></li>
-      <li><a href="#reviews">Reviews</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#booking">Bookings</a></li>
-    </ul>
-    
-    <a href="#booking" class="btn-feminine desktop-cta">Book Model</a>
   </header>
 
-  <section id="about" class="container hero-section">
-    <div class="hero-content">
-      <span class="hero-badge">Creative Portfolio</span>
-      <h1 class="hero-title">Yordanos</h1>
-      <p class="hero-subtitle">Fashion model, photo model, TV and social media host, content creator, advertising model, brand ambassador, virtual assistant, and project manager/coordinator for firms and companies across every sector.</p>
-      <p class="hero-bio">Over 2.5 years of active industry experience across commercial modeling, media hosting, and executive project management in Addis Ababa. Yordanos has spearheaded high-impact brand campaigns and operations for leading organizations including <strong>Dolmel</strong>, <strong>Great Abyssinia</strong>, and <strong>Dianas Care</strong>, combining effortless visual presence with structured organizational clarity.</p>
-      
-      <div class="stats-row">
-        <div class="stat-item">
-          <h4>2.5 Yrs</h4>
-          <p>Career Experience</p>
-        </div>
-        <div class="stat-item">
-          <h4>Top-Tier</h4>
-          <p>Brand Partnerships</p>
-        </div>
-        <div class="stat-item">
-          <h4>Multi</h4>
-          <p>Sector VA/PM</p>
-        </div>
-      </div>
-
-      <a href="#booking" class="btn-feminine">Initiate Collaboration</a>
-    </div>
-
-    <div class="hero-portrait-frame">
-      <img src="IMG_7705.PNG" alt="Yordanos - Creative Model & Operations Lead">
-      <div class="portrait-badge">&bull; Addis Ababa, Ethiopia</div>
-    </div>
-  </section>
-
-  <section id="clients" class="container client-banner">
-    <div class="client-label">Featured Work, Client Roles & Verified Performance</div>
-
-    <div class="client-cards-grid">
-      <div class="client-card">
-        <div class="client-card-header">
-          <span class="company-name">Dolmel</span>
-          <a href="https://www.instagram.com/dolmel_dolmel?igsi=MWd5a2JoNjQwazA4ag==" target="_blank" rel="noopener noreferrer" class="link-btn" title="Visit Official Instagram">
-            <i data-lucide="external-link"></i>
-          </a>
-        </div>
-        <div class="client-role">Brand Ambassador & Lead Model</div>
-        <p class="client-desc">Spearheaded commercial photoshoots, brand launch campaigns, and digital media promotions.</p>
-        <div class="client-rating">
-          <span class="stars">★★★★★</span>
-          <span class="rating-score">5.0 / 5.0</span>
-        </div>
-      </div>
-
-      <div class="client-card">
-        <div class="client-card-header">
-          <span class="company-name">Great Abyssinia</span>
-          <a href="https://www.tiktok.com/@greatabyssinia1?_r=1&_t=ZS-99T3SaNC4Sj" target="_blank" rel="noopener noreferrer" class="link-btn" title="Visit Official TikTok">
-            <i data-lucide="external-link"></i>
-          </a>
-        </div>
-        <div class="client-role">Commercial Advertising Model</div>
-        <p class="client-desc">Featured in TV commercials and promotional ad media for flagship consumer beverage lines.</p>
-        <div class="client-rating">
-          <span class="stars">★★★★★</span>
-          <span class="rating-score">4.9 / 5.0</span>
-        </div>
-      </div>
-
-      <div class="client-card">
-        <div class="client-card-header">
-          <span class="company-name">Dianas Care</span>
-          <a href="https://www.tiktok.com/@dianas.care?_r=1&_t=ZS-99T3X4SPMIe" target="_blank" rel="noopener noreferrer" class="link-btn" title="Visit Official TikTok">
-            <i data-lucide="external-link"></i>
-          </a>
-        </div>
-        <div class="client-role">Social Media Host & Content Creator</div>
-        <p class="client-desc">Hosted promotional video content, social media features, and customer engagement campaigns.</p>
-        <div class="client-rating">
-          <span class="stars">★★★★★</span>
-          <span class="rating-score">5.0 / 5.0</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="work" class="section-padding container">
-    <div class="section-head">
-      <h2>Featured Lookbook</h2>
-      <p>Selected fashion shoots, commercial features, and studio campaigns</p>
-    </div>
-
-    <div class="lookbook-grid">
-      <div class="lookbook-card">
-        <img src="IMG_7285.PNG" alt="Studio Fashion Shoot">
-        <div class="lookbook-overlay">
-          <span>Behind The Scene / Fashion</span>
-          <h3>Studio Campaign Shoot</h3>
-        </div>
-      </div>
-
-      <div class="lookbook-card">
-        <img src="IMG_7711.PNG" alt="Commercial Brand Feature">
-        <div class="lookbook-overlay">
-          <span>Brand Representation</span>
-          <h3>Commercial Ad Campaign</h3>
-        </div>
-      </div>
-
-      <div class="lookbook-card">
-        <img src="IMG_7716.PNG" alt="Social Media Hosting">
-        <div class="lookbook-overlay">
-          <span>Media & Hosting</span>
-          <h3>Social Video Feature</h3>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="reviews" class="section-padding container">
-    <div class="section-head">
-      <h2>Client Reviews & Performance Ratings</h2>
-      <p>Worked with Yordanos? Share your verified feedback and rate your experience</p>
-    </div>
-
-    <div class="review-layout-grid">
-      <div class="review-form-card">
-        <h3>Submit a Review</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
-          For verified clients, partners, and project leads.
-        </p>
-
-        <form id="reviewForm">
-          <div class="form-group">
-            <input type="text" id="reviewName" name="name" placeholder="Your Name / Organization Name" required>
-          </div>
-
-          <div class="form-group">
-            <input type="text" id="reviewProjectType" name="projectType" placeholder="Project Type (e.g., Commercial Campaign, Social Hosting)" required>
-          </div>
-
-          <div class="form-group">
-            <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">
-              Performance Rating:
-            </label>
-            <select id="reviewRating" name="rating" required>
-              <option value="5 Stars (Excellent)">★★★★★ - 5.0 (Excellent)</option>
-              <option value="4 Stars (Very Good)">★★★★☆ - 4.0 (Very Good)</option>
-              <option value="3 Stars (Good)">★★★☆☆ - 3.0 (Good)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <textarea id="reviewComment" name="comment" rows="4" placeholder="Write your testimonial or review comments..." required></textarea>
-          </div>
-
-          <button type="submit" class="btn-feminine" style="width: 100%;">Submit Rating & Review</button>
-        </form>
-      </div>
-
-      <div class="testimonials-list">
-        <div class="testimonial-card">
-          <div class="testimonial-header">
-            <div>
-              <strong class="client-title">Dolmel Fashion</strong>
-              <span class="project-tag">Brand Campaign</span>
-            </div>
-            <span class="stars">★★★★★</span>
-          </div>
-          <p class="testimonial-body">
-            "Yordanos delivered exceptional professionalism during our product launch. Her presence on camera and timing were top-tier."
-          </p>
-        </div>
-
-        <div class="testimonial-card">
-          <div class="testimonial-header">
-            <div>
-              <strong class="client-title">Dianas Care</strong>
-              <span class="project-tag">Social Media Hosting</span>
-            </div>
-            <span class="stars">★★★★★</span>
-          </div>
-          <p class="testimonial-body">
-            "High energy, smooth execution, and excellent communication throughout the shoot. Highly recommended for digital hosting."
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="services" class="section-padding container">
-    <div class="section-head">
-      <h2>Capabilities & Services</h2>
-      <p>Modeling, media hosting, and executive virtual assistance</p>
-    </div>
-
-    <div class="filter-tabs">
-      <button class="tab-btn active" onclick="filterServices('all', event)">All Capabilities</button>
-      <button class="tab-btn" onclick="filterServices('creative', event)">Modeling & Host</button>
-      <button class="tab-btn" onclick="filterServices('brand', event)">Ambassador</button>
-      <button class="tab-btn" onclick="filterServices('va', event)">Virtual Assistant</button>
-    </div>
-
-    <div class="cards-grid">
-      <div class="role-card" data-category="creative">
-        <div class="card-icon"><i data-lucide="camera"></i></div>
-        <div class="card-tag">Fashion & Commercial</div>
-        <h3>Photo Modeling</h3>
-        <p>Editorial lookbooks, commercial print ads, studio fashion sessions, and high-profile brand imagery.</p>
-      </div>
-
-      <div class="role-card" data-category="creative">
-        <div class="card-icon"><i data-lucide="video"></i></div>
-        <div class="card-tag">On-Screen & Digital</div>
-        <h3>Social Media Host</h3>
-        <p>Engaging video host for brand features, street interviews, product launches, and interactive live streams.</p>
-      </div>
-
-      <div class="role-card" data-category="brand">
-        <div class="card-icon"><i data-lucide="sparkles"></i></div>
-        <div class="card-tag">Representation</div>
-        <h3>Brand Ambassador</h3>
-        <p>Authentic brand partnership, promotional campaigns, and social representation across digital channels.</p>
-      </div>
-
-      <div class="role-card" data-category="va">
-        <div class="card-icon"><i data-lucide="user-check"></i></div>
-        <div class="card-tag">Operations Support</div>
-        <h3>Virtual Assistant & PM</h3>
-        <p>Executive calendar oversight, email correspondence, travel logistics, project coordination, and client management.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="booking" class="section-padding container">
-    <div class="booking-card">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="font-family: var(--font-serif); font-size: 2.3rem;">Initiate Booking Inquiry</h2>
-        <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 6px;">Select your required services and submit campaign details</p>
-      </div>
-
-      <form id="bookingForm" enctype="multipart/form-data">
-        <div class="form-group">
-          <input type="text" id="name" name="name" placeholder="Full Name or Business Name" required>
-        </div>
-        <div class="form-group">
-          <input type="email" id="email" name="email" placeholder="Email Address" required>
-        </div>
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero-section" id="about">
+      <div class="hero-content">
+        <span class="hero-badge">Host &middot; Model &middot; Creator</span>
+        <h1 class="hero-title">Elevating Brands Through Presence.</h1>
+        <p class="hero-subtitle">Professional social media hosting, high-fashion modeling, and curated digital brand storytelling based in Addis Ababa.</p>
+        <p class="hero-bio">Bridging the gap between luxury aesthetics and engaging live audience interaction. Partnering with top-tier brands to create unforgettable visual and experiential moments.</p>
         
-        <div class="form-group">
-          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px;">Select Desired Services (Check all that apply):</label>
-          <div class="service-checkbox-group">
-            <label class="service-checkbox-label">
-              <input type="checkbox" name="services" value="Photo / Fashion Modeling"> 
-              <span>Photo / Fashion Modeling</span>
-            </label>
-            <label class="service-checkbox-label">
-              <input type="checkbox" name="services" value="Social Media Hosting & Content Creation"> 
-              <span>Social Media Hosting & Content Creation</span>
-            </label>
-            <label class="service-checkbox-label">
-              <input type="checkbox" name="services" value="Brand Ambassador / Commercials"> 
-              <span>Brand Ambassador / Commercials</span>
-            </label>
-            <label class="service-checkbox-label">
-              <input type="checkbox" name="services" value="Virtual Assistant / Project Manager"> 
-              <span>Virtual Assistant / Project Manager</span>
-            </label>
+        <div class="stats-row">
+          <div class="stat-item">
+            <h4>50+</h4>
+            <p>Live Events Hosted</p>
+          </div>
+          <div class="stat-item">
+            <h4>35+</h4>
+            <p>Brand Campaigns</p>
+          </div>
+          <div class="stat-item">
+            <h4>100K+</h4>
+            <p>Community Reach</p>
           </div>
         </div>
 
-        <div class="form-group">
-          <textarea id="message" name="message" rows="4" placeholder="Brief details regarding project dates or scope..." required></textarea>
-        </div>
+        <a href="#contact" class="btn-feminine">Collaborate With Me</a>
+      </div>
 
-        <div class="form-group">
-          <label for="campaignBrief" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px;">Campaign Brief / Document (Optional)</label>
-          <div class="file-upload-container">
-            <input type="file" id="campaignBrief" name="briefFile" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
-            <div id="file-chosen-name" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;"></div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-feminine" style="width: 100%; margin-top: 10px;">Send Inquiry</button>
-      </form>
-
-      <div class="direct-contact-container">
-        <p class="contact-label">Or Connect Directly</p>
-        <div class="contact-buttons">
-          <a href="https://wa.me/251970836194" target="_blank" rel="noopener noreferrer" class="contact-btn">
-            <i data-lucide="message-square"></i> WhatsApp
-          </a>
-          <a href="https://t.me/+251970836194" target="_blank" rel="noopener noreferrer" class="contact-btn">
-            <i data-lucide="send"></i> Telegram
-          </a>
-          <a href="https://www.instagram.com/___yordanos__?igsi=NTMydG5xdXpqY3Bj" target="_blank" rel="noopener noreferrer" class="contact-btn">
-            <i data-lucide="instagram"></i> Instagram
-          </a>
-          <a href="mailto:carlosqebero20@gmail.com" class="contact-btn">
-            <i data-lucide="mail"></i> Email Us
-          </a>
+      <div class="hero-portrait-frame">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800" alt="Yordanos Portrait">
+        <div class="portrait-badge">
+          <i class="fa-solid fa-location-dot" style="color: var(--gold-champagne); margin-right: 6px;"></i> Addis Ababa, Ethiopia
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Client Banner / Featured Partnerships -->
+    <section class="client-banner" id="collaborations">
+      <p class="client-label">Featured Brand Collaborations & Partnerships</p>
+      <div class="client-cards-grid">
+        <div class="client-card">
+          <div class="client-card-header">
+            <span class="company-name">Habesha Breweries</span>
+            <a href="#" class="link-btn" aria-label="View project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+          <p class="client-role">Lead Event Host</p>
+          <p class="client-desc">Hosted regional music festivals and brand activation showcases across major metropolitan venues.</p>
+          <div class="client-rating">
+            <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+            <span class="rating-score">5.0 / 5</span>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="client-card-header">
+            <span class="company-name">Zemen Bank</span>
+            <a href="#" class="link-btn" aria-label="View project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+          <p class="client-role">Digital Campaign Model</p>
+          <p class="client-desc">Fronted the corporate lifestyle banking campaign featured on billboards and digital media channels.</p>
+          <div class="client-rating">
+            <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+            <span class="rating-score">5.0 / 5</span>
+          </div>
+        </div>
+
+        <div class="client-card">
+          <div class="client-card-header">
+            <span class="company-name">Kuriftu Resorts</span>
+            <a href="#" class="link-btn" aria-label="View project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+          <p class="client-role">Brand Ambassador</p>
+          <p class="client-desc">Spearheaded luxury hospitality promotional content curation and digital lifestyle showcases.</p>
+          <div class="client-rating">
+            <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+            <span class="rating-score">4.9 / 5</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lookbook Section -->
+    <section class="section-padding" id="lookbook">
+      <div class="section-head">
+        <h2>Visual Lookbook</h2>
+        <p>A curation of editorial modeling, runway highlights, and live hosting moments.</p>
+      </div>
+
+      <div class="lookbook-grid">
+        <div class="lookbook-card">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600" alt="Editorial Fashion">
+          <div class="lookbook-overlay">
+            <span>Editorial</span>
+            <h3>High Fashion Runway</h3>
+          </div>
+        </div>
+        <div class="lookbook-card">
+          <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=600" alt="Live Hosting">
+          <div class="lookbook-overlay">
+            <span>Live Stage</span>
+            <h3>Corporate Gala Hosting</h3>
+          </div>
+        </div>
+        <div class="lookbook-card">
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=600" alt="Commercial Modeling">
+          <div class="lookbook-overlay">
+            <span>Commercial</span>
+            <h3>Lifestyle & Apparel</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section-padding" id="services">
+      <div class="section-head">
+        <h2>Expertise & Offerings</h2>
+        <p>Tailored professional engagements designed to elevate your brand impact.</p>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">All Services</button>
+        <button class="tab-btn" data-filter="hosting">Event Hosting</button>
+        <button class="tab-btn" data-filter="modeling">Model & Editorial</button>
+        <button class="tab-btn" data-filter="digital">Digital Promotion</button>
+      </div>
+
+      <div class="cards-grid">
+        <div class="role-card" data-category="hosting">
+          <div class="card-icon"><i class="fa-solid fa-microphone-lines"></i></div>
+          <div class="card-tag">Stage & Gala</div>
+          <h3>Corporate & Gala Hosting</h3>
+          <p>Professional bilingual or localized script delivery, audience engagement, and seamless stage management for high-profile events.</p>
+        </div>
+
+        <div class="role-card" data-category="modeling">
+          <div class="card-icon"><i class="fa-solid fa-camera-retro"></i></div>
+          <div class="card-tag">Editorial</div>
+          <h3>Commercial & Fashion Modeling</h3>
+          <p>Print advertising, lookbook shoots, brand campaigns, and high-fashion runway modeling tailored to brand identity.</p>
+        </div>
+
+        <div class="role-card" data-category="digital">
+          <div class="card-icon"><i class="fa-solid fa-clapperboard"></i></div>
+          <div class="card-tag">Social Media</div>
+          <h3>Brand Ambassadorship</h3>
+          <p>Long-term partnership integration, dedicated social media reviews, promotional stories, and digital presence expansion.</p>
+        </div>
+
+        <div class="role-card" data-category="hosting">
+          <div class="card-icon"><i class="fa-solid fa-music"></i></div>
+          <div class="card-tag">Festivals</div>
+          <h3>Concert & Festival Emceeing</h3>
+          <p>High-energy crowd hyping, artist introductions, sponsor shoutouts, and live interaction for large-scale outdoor events.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials & Review Submission Section -->
+    <section class="section-padding" id="reviews">
+      <div class="section-head">
+        <h2>Client Feedback</h2>
+        <p>Verified testimonials from directors, event organizers, and brand managers.</p>
+      </div>
+
+      <div class="review-layout-grid">
+        <div class="testimonials-list">
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div>
+                <span class="client-title">Dawit M.</span>
+                <span class="project-tag">Creative Director, Apex Media</span>
+              </div>
+              <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+            </div>
+            <p class="testimonial-body">"Yordanos brings an unmatched level of elegance and professionalism to every stage. Her composure and command of the room made our corporate gala a resounding success."</p>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-header">
+              <div>
+                <span class="client-title">Helen T.</span>
+                <span class="project-tag">Brand Manager, StyleHub</span>
+              </div>
+              <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+            </div>
+            <p class="testimonial-body">"An absolute joy to work with on set. Yordanos understood our brand concept instantly and delivered stunning editorial imagery with zero friction."</p>
+          </div>
+        </div>
+
+        <div class="review-form-card">
+          <h3>Leave a Review</h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">Worked together recently? Share your experience.</p>
+          <form id="reviewForm">
+            <div class="form-group">
+              <input type="text" id="reviewerName" placeholder="Your Full Name / Company" required>
+            </div>
+            <div class="form-group">
+              <select id="reviewRating" required>
+                <option value="" disabled selected>Select Rating</option>
+                <option value="5">★★★★★ (5/5)</option>
+                <option value="4">★★★★☆ (4/5)</option>
+                <option value="3">★★★☆☆ (3/5)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <textarea id="reviewText" rows="4" placeholder="Your review or testimonial..." required></textarea>
+            </div>
+            <button type="submit" class="btn-feminine" style="width: 100%;">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking & Inquiry Section -->
+    <section class="section-padding" id="contact">
+      <div class="section-head">
+        <h2>Bookings & Inquiries</h2>
+        <p>Let's discuss how we can bring your next project or event to life.</p>
+      </div>
+
+      <div class="booking-card">
+        <form id="bookingForm">
+          <div class="form-group">
+            <input type="text" placeholder="Your Name or Organization" required>
+          </div>
+          <div class="form-group">
+            <input type="email" placeholder="Email Address" required>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 10px;">Select Services Needed</label>
+            <div class="service-checkbox-group">
+              <label class="service-checkbox-label">
+                <input type="checkbox" name="service" value="hosting"> Event Hosting & Emceeing
+              </label>
+              <label class="service-checkbox-label">
+                <input type="checkbox" name="service" value="modeling"> Commercial & Editorial Modeling
+              </label>
+              <label class="service-checkbox-label">
+                <input type="checkbox" name="service" value="ambassador"> Brand Ambassadorship
+              </label>
+              <label class="service-checkbox-label">
+                <input type="checkbox" name="service" value="other"> Other Collaboration
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" placeholder="Event Date / Timeline Details" required>
+          </div>
+          <div class="form-group">
+            <textarea rows="5" placeholder="Project details, brief summary, or budget outline..." required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: block; margin-bottom: 10px;">Attach Brief / Document (Optional)</label>
+            <div class="file-upload-container">
+              <input type="file" id="projectBrief">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-feminine" style="width: 100%;">Send Inquiry</button>
+        </form>
+
+        <div class="direct-contact-container">
+          <p class="contact-label">Or reach out directly via</p>
+          <div class="contact-buttons">
+            <a href="mailto:yordanos.management@example.com" class="contact-btn"><i class="fa-regular fa-envelope"></i> Email Me</a>
+            <a href="https://t.me/username" target="_blank" class="contact-btn"><i class="fa-brands fa-telegram"></i> Telegram</a>
+            <a href="https://instagram.com" target="_blank" class="contact-btn"><i class="fa-brands fa-instagram"></i> Instagram</a>
+            <a href="tel:+251911000000" class="contact-btn"><i class="fa-solid fa-phone"></i> Call Direct</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
     <div class="container">
-      <p>&copy; 2026 Yordanos. All Rights Reserved. | Addis Ababa, Ethiopia</p>
+      <p>&copy; 2026 Yordanos. All Rights Reserved. Designed with elegance & precision.</p>
     </div>
   </footer>
 
-  <script src="main.js"></script>
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    // Mobile Menu Toggle Functionality
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const navLinks = document.getElementById('navLinks');
-
-    if (mobileMenuToggle && navLinks) {
-      mobileMenuToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-      });
-
-      // Close menu when clicking any nav link
-      navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          navLinks.classList.remove('active');
-        });
-      });
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
