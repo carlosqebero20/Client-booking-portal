@@ -5,11 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     reviewForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const nameEl = document.getElementById('reviewName');
+      const typeEl = document.getElementById('reviewProjectType');
+      const ratingEl = document.getElementById('reviewRating');
+      const commentEl = document.getElementById('reviewComment');
+
       const formData = {
-        name: document.getElementById('reviewName').value,
-        projectType: document.getElementById('reviewProjectType').value,
-        rating: document.getElementById('reviewRating').value,
-        comment: document.getElementById('reviewComment').value
+        name: nameEl ? nameEl.value : '',
+        projectType: typeEl ? typeEl.value : '',
+        rating: ratingEl ? ratingEl.value : '5',
+        comment: commentEl ? commentEl.value : ''
       };
 
       try {
@@ -37,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileInput = document.getElementById('campaignBrief');
   const fileChosenName = document.getElementById('file-chosen-name');
 
-  if (fileInput) {
+  if (fileInput && fileChosenName) {
     fileInput.addEventListener('change', () => {
       if (fileInput.files && fileInput.files[0]) {
         fileChosenName.textContent = `Selected: ${fileInput.files[0].name}`;
@@ -47,16 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Booking Form Submission (Supports Checkboxes & Files via FormData)
+  // Booking Form Submission
   const bookingForm = document.getElementById('bookingForm');
   if (bookingForm) {
     bookingForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const formData = new FormData();
-      formData.append('name', document.getElementById('name').value);
-      formData.append('email', document.getElementById('email').value);
-      formData.append('message', document.getElementById('message').value);
+      const nameField = document.getElementById('name');
+      const emailField = document.getElementById('email');
+      const messageField = document.getElementById('message');
+
+      if (nameField) formData.append('name', nameField.value);
+      if (emailField) formData.append('email', emailField.value);
+      if (messageField) formData.append('message', messageField.value);
 
       // Collect all checked service checkboxes
       const selectedServices = [];
@@ -66,14 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
       formData.append('projectType', selectedServices.join(', '));
 
       // Append file if selected
-      if (fileInput && fileInput.files[0]) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
         formData.append('briefFile', fileInput.files[0]);
       }
 
       try {
         const response = await fetch('/api/bookings', {
           method: 'POST',
-          // Note: Do NOT set Content-Type header manually when using FormData
           body: formData
         });
 
@@ -81,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
           alert('Booking inquiry sent successfully!');
           bookingForm.reset();
-          if (fileChosenName) fileChosenName.textContent = ''; // Clear file display text on reset
+          if (fileChosenName) fileChosenName.textContent = '';
         } else {
           alert('Error: ' + (result.message || 'Unknown error'));
         }
@@ -95,13 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Services Filter Tab Logic
 window.filterServices = function(category, event) {
-  // Update active tab button style
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   if (event && event.target) {
     event.target.classList.add('active');
   }
 
-  // Filter service cards
   document.querySelectorAll('.role-card').forEach(card => {
     const cardCategory = card.getAttribute('data-category');
     if (category === 'all' || cardCategory === category) {
