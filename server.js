@@ -31,7 +31,7 @@ async function ensureTablesExist() {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 project_type VARCHAR(255) NOT NULL,
-                rating INT NOT NULL,
+                rating VARCHAR(255) NOT NULL,
                 comment TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
