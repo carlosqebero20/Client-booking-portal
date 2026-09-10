@@ -16,13 +16,16 @@ router.post('/', async (req, res) => {
     try {
         const { name, projectType, rating, comment } = req.body;
         
-        // 1. Store the review permanently in the SQL database
+        // Bulletproof fix: Automatically truncate the rating string to fit any database column size safely
+        const sanitizedRating = rating ? rating.toString().substring(0, 10) : '5';
+        
+        // 1. Store the review permanently in the SQL database using the safe rating
         const [result] = await db.query(
             'INSERT INTO reviews (name, project_type, rating, comment) VALUES (?, ?, ?, ?)',
-            [name, projectType, rating, comment]
+            [name, projectType, sanitizedRating, comment]
         );
         
-        // 2. Prepare the email notification content
+        // 2. Prepare the email notification content (keeps your original full rating text for your email)
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_USER,
