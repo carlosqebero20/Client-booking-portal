@@ -172,9 +172,9 @@
               Performance Rating:
             </label>
             <select id="reviewRating" name="rating" required>
-              <option value="5 Stars (Excellent)">★★★★★ - 5.0 (Excellent)</option>
-              <option value="4 Stars (Very Good)">★★★★☆ - 4.0 (Very Good)</option>
-              <option value="3 Stars (Good)">★★★☆☆ - 3.0 (Good)</option>
+              <option value="5">★★★★★ - 5.0 (Excellent)</option>
+              <option value="4">★★★★☆ - 4.0 (Very Good)</option>
+              <option value="3">★★★☆☆ - 3.0 (Good)</option>
             </select>
           </div>
 
@@ -342,6 +342,58 @@
   <script>
     // Initialize Lucide Icons
     lucide.createIcons();
+
+    // Handle Booking Form submission without page reload
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+
+      try {
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Booking inquiry submitted successfully!');
+          this.reset();
+        } else {
+          alert('Error: ' + (result.message || 'Something went wrong.'));
+        }
+      } catch (err) {
+        console.error('Submission error:', err);
+        alert('Server error. Please check your connection.');
+      }
+    });
+
+    // Handle Review Form submission without page reload
+    document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch('/api/bookings/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Thank you! Your review has been submitted.');
+          this.reset();
+        } else {
+          alert('Error: ' + (result.message || 'Something went wrong.'));
+        }
+      } catch (err) {
+        console.error('Review submission error:', err);
+        alert('Server error. Please check your connection.');
+      }
+    });
   </script>
 </body>
 </html>

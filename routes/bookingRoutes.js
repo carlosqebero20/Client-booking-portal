@@ -1,39 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const nodemailer = require('nodemailer');
 
-// Configure standard disk storage for multer upload
+// Configure Multer for image uploads (accepts any field name to prevent crashes)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../public/uploads'));
+        cb(null, 'public/uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
+const upload = multer({ storage: storage });
 
-// Configure multer with file size limits (5MB max) and type filters
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|pdf|docx|doc/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-
-        if (extname && mimetype) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only images, PDFs, and Word documents are allowed!'));
-        }
-    }
-});
-
-// Configure transporter to send notifications directly to carlosqebero20@gmail.com
+// Configure Nodemailer
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -42,68 +25,83 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// GET all bookings
-router.get('/', async (req, res) => {
+// POST endpoint for bookings
+router.post('/', upload.any(), async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM bookings');
-        res.json(rows);
+        const { fullName, email, phone, eventType, eventDate, guests, package: pkg, notes } = req.body;
+        
+        // Find if a file was uploaded under any field name
+        const file = req.files && req.files.length > 0 ? req.files[0] : null;
+        const paymentProof = file ? `/uploads/${file.filename}` : null;
+
+        const query = `INSERT INTO bookings (full_name, email, phone, event_type, event_date, guests, package, notes, payment_proof) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        await db.execute(query, [
+            fullName || null, 
+            email || null, 
+            phone || null, 
+            eventType || null, 
+            eventDate || null, 
+            guests || null, 
+            pkg || null, 
+            notes || null, 
+            paymentProof
+        ]);
+
+        // Send confirmation/notification emails
+        if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'your_gmail@gmail.com') {
+            // Email to Client
+            if (email) {
+                await transporter.sendMail({
+                    from: process.env.EMAIL_USER,
+                    to: email,
+                    subject: 'Booking Confirmation - Doni',
+                    text: `Hello ${fullName},\n\nThank you for booking with us! We have received your request for ${eventType} on ${eventDate}.\n\nBest regards,\nDoni Team`
+                }).catch(emailErr => console.error('Client email sending failed:', emailErr));
+            }
+
+            // Notification Email to You (Admin)
+            await transporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: process.env.EMAIL_USER,
+                subject: 'New Booking Received!',
+                text: `You have a new booking from ${fullName} (${email}, ${phone}) for ${eventType} on ${eventDate}.`
+            }).catch(emailErr => console.error('Admin email notification failed:', emailErr));
+        }
+
+        res.status(200).json({ message: 'Booking successful!' });
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
+        console.error('Booking error:', err);
+        res.status(500).json({ error: 'Database error during booking.' });
     }
 });
 
-// POST a new booking or review submission
-router.post('/', upload.single('briefFile'), async (req, res) => {
+// POST endpoint for reviews
+router.post('/reviews', async (req, res) => {
     try {
-        const { name, projectType, email, message, rating, comment } = req.body;
-        let mailOptions = {};
-        let filePath = null;
+        const { name, project, rating, comment } = req.body;
 
-        if (rating || comment) {
-            const query = 'INSERT INTO reviews (name, project_type, rating, comment) VALUES (?, ?, ?, ?)';
-            await db.query(query, [name, projectType, rating, comment]);
+        const query = `INSERT INTO reviews (name, project, rating, comment) VALUES (?, ?, ?, ?)`;
+        await db.execute(query, [
+            name || null, 
+            project || null, 
+            rating || null, 
+            comment || null
+        ]);
 
-            mailOptions = {
+        // Send Email Notification to You (Admin) for New Reviews
+        if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'your_gmail@gmail.com') {
+            await transporter.sendMail({
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_USER,
-                subject: `New Review from ${name}`,
-                text: `Client Name: ${name}\nProject Type: ${projectType}\nRating: ${rating}\nComment: ${comment}`
-            };
-        } else {
-            if (req.file) {
-                const cleanName = name ? name.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'client';
-                const currentDate = new Date().toISOString().split('T')[0];
-                const uniqueId = Date.now().toString().slice(-4);
-                const ext = path.extname(req.file.originalname); // Fixed: changed file to req.file
-                
-                const newFilename = `${cleanName}-${currentDate}-${uniqueId}${ext}`;
-                const oldPath = req.file.path;
-                const newPath = path.join(__dirname, '../public/uploads', newFilename);
-
-                fs.renameSync(oldPath, newPath);
-                filePath = `/uploads/${newFilename}`;
-            }
-
-            const query = 'INSERT INTO bookings (name, project_type, email, message, file_path) VALUES (?, ?, ?, ?, ?)';
-            await db.query(query, [name, projectType, email, message, filePath]);
-
-            mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
-                subject: `New Booking Request from ${name}`,
-                text: `Client Name: ${name}\nProject Type: ${projectType}\nEmail: ${email}\nMessage: ${message}\nAttached File: ${filePath ? 'Yes (' + filePath + ')' : 'None'}`
-            };
+                subject: 'New Review Submitted!',
+                text: `You received a new review!\n\nName: ${name}\nProject: ${project}\nRating: ${rating}/5\nComment: ${comment}`
+            }).catch(emailErr => console.error('Review email notification failed:', emailErr));
         }
 
-        await transporter.sendMail(mailOptions);
-        return res.status(201).json({ success: true, message: 'Saved to database and email notification sent to carlosqebero20@gmail.com!' });
+        res.status(200).json({ message: 'Review submitted successfully!' });
     } catch (err) {
-        console.error('Detailed Booking Error:', err);
-        if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({ success: false, message: 'File size exceeds the 5MB limit.' });
-        }
-        res.status(500).json({ success: false, error: err.message || 'Server or database error' });
+        console.error('Review error:', err);
+        res.status(500).json({ error: 'Database error during review submission.' });
     }
 });
 
