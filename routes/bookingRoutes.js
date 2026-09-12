@@ -1,108 +1,65 @@
+require('dotenv').config();
 const express = require('express');
-const router = express.Router();
-const db = require('../db');
-const multer = require('multer');
+const cors = require('cors');
 const path = require('path');
-const nodemailer = require('nodemailer');
+const fs = require('fs');
+const db = require('./db');
+const bookingRoutes = require('./routes/bookingRoutes');
 
-// Configure Multer for image uploads (accepts any field name to prevent crashes)
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage: storage });
+const app = express();
+const PORT = process.env.PORT || 10000;
 
-// Configure Nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// POST endpoint for bookings
-router.post('/', upload.any(), async (req, res) => {
+// Serve static files from the 'public' folder (HTML, CSS, uploads)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Use booking routes
+app.use('/api/bookings', bookingRoutes);
+
+// Automatically create database tables and upload directory on startup
+async function initializeDatabase() {
     try {
-        const { fullName, email, phone, eventType, eventDate, guests, package: pkg, notes } = req.body;
-        
-        // Find if a file was uploaded under any field name
-        const file = req.files && req.files.length > 0 ? req.files[0] : null;
-        const paymentProof = file ? `/uploads/${file.filename}` : null;
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS bookings (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                full_name VARCHAR(255),
+                email VARCHAR(255),
+                phone VARCHAR(50),
+                event_type VARCHAR(100),
+                event_date DATE,
+                guests INT,
+                package VARCHAR(100),
+                notes TEXT,
+                payment_proof VARCHAR(255)
+            )
+        `);
 
-        const query = `INSERT INTO bookings (full_name, email, phone, event_type, event_date, guests, package, notes, payment_proof) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        await db.execute(query, [
-            fullName || null, 
-            email || null, 
-            phone || null, 
-            eventType || null, 
-            eventDate || null, 
-            guests || null, 
-            pkg || null, 
-            notes || null, 
-            paymentProof
-        ]);
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS reviews (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255),
+                project VARCHAR(255),
+                rating INT,
+                comment TEXT
+            )
+        `);
 
-        // Send confirmation/notification emails
-        if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'your_gmail@gmail.com') {
-            // Email to Client
-            if (email) {
-                await transporter.sendMail({
-                    from: process.env.EMAIL_USER,
-                    to: email,
-                    subject: 'Booking Confirmation - Doni',
-                    text: `Hello ${fullName},\n\nThank you for booking with us! We have received your request for ${eventType} on ${eventDate}.\n\nBest regards,\nDoni Team`
-                }).catch(emailErr => console.error('Client email sending failed:', emailErr));
-            }
-
-            // Notification Email to You (Admin)
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
-                subject: 'New Booking Received!',
-                text: `You have a new booking from ${fullName} (${email}, ${phone}) for ${eventType} on ${eventDate}.`
-            }).catch(emailErr => console.error('Admin email notification failed:', emailErr));
+        // Ensure uploads folder exists so file attachments never crash
+        const uploadDir = path.join(__dirname, 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)){
+            fs.mkdirSync(uploadDir, { recursive: true });
         }
 
-        res.status(200).json({ message: 'Booking successful!' });
+        console.log("Database tables and upload directory verified successfully.");
     } catch (err) {
-        console.error('Booking error:', err);
-        res.status(500).json({ error: 'Database error during booking.' });
+        console.error("Failed to initialize database tables:", err);
     }
+}
+
+app.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    await initializeDatabase();
 });
-
-// POST endpoint for reviews
-router.post('/reviews', async (req, res) => {
-    try {
-        const { name, project, rating, comment } = req.body;
-
-        const query = `INSERT INTO reviews (name, project, rating, comment) VALUES (?, ?, ?, ?)`;
-        await db.execute(query, [
-            name || null, 
-            project || null, 
-            rating || null, 
-            comment || null
-        ]);
-
-        // Send Email Notification to You (Admin) for New Reviews
-        if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'your_gmail@gmail.com') {
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
-                subject: 'New Review Submitted!',
-                text: `You received a new review!\n\nName: ${name}\nProject: ${project}\nRating: ${rating}/5\nComment: ${comment}`
-            }).catch(emailErr => console.error('Review email notification failed:', emailErr));
-        }
-
-        res.status(200).json({ message: 'Review submitted successfully!' });
-    } catch (err) {
-        console.error('Review error:', err);
-        res.status(500).json({ error: 'Database error during review submission.' });
-    }
-});
-
-module.exports = router;
