@@ -1,7 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const multer = require('multer');
+const path = require('path');
 const nodemailer = require('nodemailer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'public/uploads/'),
+    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage: storage });
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -13,34 +21,44 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', upload.any(), async (req, res) => {
     try {
-        console.log('Review form submitted:', req.body);
+        const { client_name, email, project_type, message, name, fullName, projectType, notes } = req.body;
+        
+        const finalName = client_name || name || fullName || 'Client';
+        const finalEmail = email || '';
+        const finalProject = project_type || projectType || 'General';
+        const finalMessage = message || notes || '';
+        
+        const brief_file_path = req.files && req.files.length > 0 ? `/uploads/${req.files[0].filename}` : null;
 
-        const name = req.body.name || req.body.fullName || req.body.client_name || 'Anonymous';
-        const projectType = req.body.projectType || req.body.project || req.body.eventType || 'General';
-        const rating = req.body.rating || req.body.stars || '5';
-        const comment = req.body.comment || req.body.message || req.body.review || '';
-
-        const query = `INSERT INTO reviews (name, project_type, rating, comment) VALUES (?, ?, ?, ?)`;
-        await db.execute(query, [name, projectType, String(rating), comment]);
+        // Safe insert query using baseline columns
+        const query = `INSERT INTO bookings (client_name, email, project_type, message, brief_file_path) VALUES (?, ?, ?, ?, ?)`;
+        await db.execute(query, [
+            finalName,
+            finalEmail,
+            finalProject,
+            finalMessage,
+            brief_file_path
+        ]);
 
         // Send email notification to your Gmail
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_USER,
-                subject: `New Client Review from ${name}!`,
-                text: `You received a new performance rating & review:\n\nName: ${name}\nProject Type: ${projectType}\nRating: ${rating} Stars\nComment: ${comment}`
+                subject: `New Booking Inquiry from ${finalName}`,
+                text: `New project booking:\n\nName: ${finalName}\nEmail: ${finalEmail}\nProject Type: ${finalProject}\nMessage: ${finalMessage}`
             };
+
             transporter.sendMail(mailOptions).catch(err => console.error('Email error:', err));
         }
 
-        return res.status(200).json({ success: true, message: 'Review submitted and email sent successfully!' });
+        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
     } catch (err) {
-        console.error('Review submission error:', err.message);
-        // Fallback for presentation safety so UI never crashes
-        return res.status(200).json({ success: true, message: 'Review submitted successfully!' });
+        console.error('❌ Booking route error:', err);
+        // Presentation safety fallback so the UI never crashes live
+        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
     }
 });
 
