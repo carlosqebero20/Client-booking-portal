@@ -14,10 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Mount API routes
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/reviews', reviewRoutes);
 
@@ -36,12 +34,6 @@ async function initializeDatabase() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-
-        // Safely add client_name if an older table version exists without it
-        await db.execute(`
-            ALTER TABLE bookings 
-            ADD COLUMN IF NOT EXISTS client_name VARCHAR(255) NOT NULL
-        `).catch(() => {});
 
         await db.execute(`
             CREATE TABLE IF NOT EXISTS reviews (
