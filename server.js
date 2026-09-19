@@ -2,8 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const db = require('./db');
 const bookingRoutes = require('./routes/bookingRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -12,40 +14,52 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the 'public' folder (HTML, CSS, uploads)
+// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Use booking routes
+// Mount API routes
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/reviews', reviewRoutes);
 
-// Automatically create database tables on startup if they don't exist
 async function initializeDatabase() {
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS bookings (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                full_name VARCHAR(255),
-                email VARCHAR(255),
+                client_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
                 phone VARCHAR(50),
-                event_type VARCHAR(100),
-                event_date DATE,
-                guests INT,
-                package VARCHAR(100),
-                notes TEXT,
-                payment_proof VARCHAR(255)
+                project_type VARCHAR(255) NOT NULL,
+                budget VARCHAR(100),
+                message TEXT NOT NULL,
+                brief_file_path VARCHAR(500),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
+
+        // Safely add client_name if an older table version exists without it
+        await db.execute(`
+            ALTER TABLE bookings 
+            ADD COLUMN IF NOT EXISTS client_name VARCHAR(255) NOT NULL
+        `).catch(() => {});
 
         await db.execute(`
             CREATE TABLE IF NOT EXISTS reviews (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                project VARCHAR(255),
-                rating INT,
-                comment TEXT
+                name VARCHAR(255) NOT NULL,
+                project_type VARCHAR(255) NOT NULL,
+                rating VARCHAR(50) NOT NULL,
+                comment TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        console.log("Database tables verified/created successfully.");
+
+        const uploadDir = path.join(__dirname, 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        console.log("Database tables and upload directory verified successfully.");
     } catch (err) {
         console.error("Failed to initialize database tables:", err);
     }

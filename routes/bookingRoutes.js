@@ -1,65 +1,57 @@
-require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const router = express.Router();
+const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
-const db = require('./db');
-const bookingRoutes = require('./routes/bookingRoutes');
+const db = require('../db');
+const nodemailer = require('nodemailer');
 
-const app = express();
-const PORT = process.env.PORT || 10000;
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../public/uploads'));
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
-// Serve static files from the 'public' folder (HTML, CSS, uploads)
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Use booking routes
-app.use('/api/bookings', bookingRoutes);
-
-// Automatically create database tables and upload directory on startup
-async function initializeDatabase() {
+router.post('/', upload.single('briefFile'), async (req, res) => {
     try {
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS bookings (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                full_name VARCHAR(255),
-                email VARCHAR(255),
-                phone VARCHAR(50),
-                event_type VARCHAR(100),
-                event_date DATE,
-                guests INT,
-                package VARCHAR(100),
-                notes TEXT,
-                payment_proof VARCHAR(255)
-            )
-        `);
+        // Accept multiple possible naming conventions from different frontend forms
+        const clientName = req.body.name || req.body.fullName || req.body.full_name || 'Anonymous';
+        const email = req.body.email || '';
+        const phone = req.body.phone || '';
+        const projectType = req.body.projectType || req.body.eventType || req.body.project || 'General Booking';
+        const budget = req.body.budget || req.body.package || 'N/A';
+        const message = req.body.message || req.body.notes || '';
+        const briefFilePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-        await db.execute(`
-            CREATE TABLE IF NOT EXISTS reviews (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                project VARCHAR(255),
-                rating INT,
-                comment TEXT
-            )
-        `);
+        const query = `INSERT INTO bookings (client_name, email, phone, project_type, budget, message, brief_file_path) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await db.execute(query, [clientName, email, phone, projectType, budget, message, briefFilePath]);
 
-        // Ensure uploads folder exists so file attachments never crash
-        const uploadDir = path.join(__dirname, 'public', 'uploads');
-        if (!fs.existsSync(uploadDir)){
-            fs.mkdirSync(uploadDir, { recursive: true });
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: process.env.EMAIL_USER,
+                subject: `New Booking Inquiry from ${clientName}!`,
+                text: `You have received a new booking:\n\nName: ${clientName}\nEmail: ${email}\nPhone: ${phone}\nProject Type: ${projectType}\nBudget/Package: ${budget}\nMessage: ${message}\nFile: ${briefFilePath ? 'Attached' : 'None'}`
+            };
+            transporter.sendMail(mailOptions).catch(err => console.error('Email error:', err));
         }
 
-        console.log("Database tables and upload directory verified successfully.");
+        res.status(201).json({ success: true, message: 'Booking saved and email sent successfully!', id: result.insertId });
     } catch (err) {
-        console.error("Failed to initialize database tables:", err);
+        console.error('Database booking error:', err);
+        res.status(500).json({ success: false, message: 'Server error while saving booking: ' + err.message });
     }
-}
-
-app.listen(PORT, async () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    await initializeDatabase();
 });
+
+module.exports = router;
