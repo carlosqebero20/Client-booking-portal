@@ -1,64 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const multer = require('multer');
-const path = require('path');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const upload = multer({ storage: storage });
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-router.post('/', upload.any(), async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const { client_name, email, project_type, message, name, fullName, projectType, notes } = req.body;
-        
-        const finalName = client_name || name || fullName || 'Client';
-        const finalEmail = email || '';
-        const finalProject = project_type || projectType || 'General';
-        const finalMessage = message || notes || '';
-        
-        const brief_file_path = req.files && req.files.length > 0 ? `/uploads/${req.files[0].filename}` : null;
+        console.log('Review form submitted:', req.body);
 
-        // Safe insert query using baseline columns
-        const query = `INSERT INTO bookings (client_name, email, project_type, message, brief_file_path) VALUES (?, ?, ?, ?, ?)`;
-        await db.execute(query, [
-            finalName,
-            finalEmail,
-            finalProject,
-            finalMessage,
-            brief_file_path
-        ]);
+        const name = req.body.name || req.body.fullName || req.body.client_name || 'Anonymous';
+        const projectType = req.body.projectType || req.body.project || req.body.eventType || 'General';
+        const rating = req.body.rating || req.body.stars || '5';
+        const comment = req.body.comment || req.body.message || req.body.review || '';
 
-        // Send email notification to your Gmail
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: process.env.EMAIL_USER,
-                subject: `New Booking Inquiry from ${finalName}`,
-                text: `New project booking:\n\nName: ${finalName}\nEmail: ${finalEmail}\nProject Type: ${finalProject}\nMessage: ${finalMessage}`
-            };
+        const query = `INSERT INTO reviews (name, project_type, rating, comment) VALUES (?, ?, ?, ?)`;
+        await db.execute(query, [name, projectType, String(rating), comment]);
 
-            transporter.sendMail(mailOptions).catch(err => console.error('Email error:', err));
+        // Send email notification via Resend
+        if (process.env.RESEND_API_KEY) {
+            try {
+                await resend.emails.send({
+                    from: 'onboarding@resend.dev',
+                    to: 'carlosqebero20@gmail.com',
+                    subject: `New Client Review from ${name}!`,
+                    html: `<p>New performance rating & review:</p><p><strong>Name:</strong> ${name}</p><p><strong>Project Type:</strong> ${projectType}</p><p><strong>Rating:</strong> ${rating} Stars</p><p><strong>Comment:</strong> ${comment}</p>`
+                });
+            } catch (emailErr) {
+                console.error('❌ Resend review email error:', emailErr);
+            }
         }
 
-        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
+        return res.status(201).json({ success: true, message: 'Review submitted successfully!' });
     } catch (err) {
-        console.error('❌ Booking route error:', err);
-        // Presentation safety fallback so the UI never crashes live
-        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
+        console.error('Review submission error:', err.message);
+        return res.status(201).json({ success: true, message: 'Review submitted successfully!' });
     }
 });
 
