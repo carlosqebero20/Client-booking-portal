@@ -17,7 +17,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post('/', upload.single('brief_file'), async (req, res) => {
+// FIXED: Changed 'brief_file' to 'briefFile' to match your HTML form input name
+router.post('/', upload.single('briefFile'), async (req, res) => {
     // Set headers to prevent CORS or connection drops
     res.setHeader('Content-Type', 'application/json');
 
@@ -25,7 +26,7 @@ router.post('/', upload.single('brief_file'), async (req, res) => {
     
     const clientName = req.body.client_name || req.body.name || 'Anonymous';
     const email = req.body.email || 'No email provided';
-    let projectType = req.body.project_type || req.body.projectType || req.body.service || 'General';
+    let projectType = req.body.project_type || req.body.projectType || req.body.services || req.body.service || 'General';
     if (Array.isArray(projectType)) {
         projectType = projectType.join(', ');
     }
