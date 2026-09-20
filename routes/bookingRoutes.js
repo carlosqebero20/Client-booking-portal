@@ -7,51 +7,56 @@ const { Resend } = require('resend');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Set up multer storage for file uploads
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../public/uploads'));
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
 });
 const upload = multer({ storage: storage });
 
-router.post('/', upload.any(), async (req, res) => {
+router.post('/', upload.single('brief_file'), async (req, res) => {
     try {
-        const { client_name, email, project_type, message, name, fullName, projectType, notes } = req.body;
-        
-        const finalName = client_name || name || fullName || 'Client';
-        const finalEmail = email || '';
-        const finalProject = project_type || projectType || 'General';
-        const finalMessage = message || notes || '';
-        
-        const brief_file_path = req.files && req.files.length > 0 ? `/uploads/${req.files[0].filename}` : null;
+        console.log('Booking request body:', req.body);
+        console.log('Uploaded file:', req.file);
+
+        const clientName = req.body.client_name || req.body.name || 'Anonymous';
+        const email = req.body.email || 'No email provided';
+        const projectType = req.body.project_type || req.body.projectType || 'General';
+        const message = req.body.message || '';
+        const briefFilePath = req.file ? `/uploads/${req.file.filename}` : null;
 
         const query = `INSERT INTO bookings (client_name, email, project_type, message, brief_file_path) VALUES (?, ?, ?, ?, ?)`;
-        await db.execute(query, [
-            finalName,
-            finalEmail,
-            finalProject,
-            finalMessage,
-            brief_file_path
-        ]);
+        await db.execute(query, [clientName, email, projectType, message, briefFilePath]);
 
-        // Send email via official Resend package
+        // Send email via Resend
         if (process.env.RESEND_API_KEY) {
             try {
-                const data = await resend.emails.send({
+                await resend.emails.send({
                     from: 'onboarding@resend.dev',
                     to: 'carlosqebero20@gmail.com',
-                    subject: `New Booking Inquiry from ${finalName}!`,
-                    html: `<p>New project booking:</p><p><strong>Name:</strong> ${finalName}</p><p><strong>Email:</strong> ${finalEmail}</p><p><strong>Project Type:</strong> ${finalProject}</p><p><strong>Message:</strong> ${finalMessage}</p>`
+                    subject: `New Booking Inquiry from ${clientName}!`,
+                    html: `<p>New booking request received:</p>
+                           <p><strong>Name:</strong> ${clientName}</p>
+                           <p><strong>Email:</strong> ${email}</p>
+                           <p><strong>Project Type:</strong> ${projectType}</p>
+                           <p><strong>Message:</strong> ${message}</p>`
                 });
-                console.log('Resend success:', data);
+                console.log('Booking email sent successfully via Resend');
             } catch (emailErr) {
-                console.error('❌ Resend package error:', emailErr);
+                console.error('❌ Resend booking email error:', emailErr);
             }
+        } else {
+            console.log('⚠️ RESEND_API_KEY is missing in environment variables.');
         }
 
-        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
+        res.status(201).json({ success: true, message: 'Booking inquiry submitted successfully!' });
     } catch (err) {
-        console.error('❌ Booking route error:', err);
-        return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
+        console.error('Booking error details:', err);
+        res.status(500).json({ success: false, message: 'Server error: ' + err.message });
     }
 });
 
