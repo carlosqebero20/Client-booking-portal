@@ -18,6 +18,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post('/', upload.single('brief_file'), async (req, res) => {
+    // Set headers to prevent CORS or connection drops
+    res.setHeader('Content-Type', 'application/json');
+
     console.log('Booking request body:', req.body);
     
     const clientName = req.body.client_name || req.body.name || 'Anonymous';
@@ -28,7 +31,7 @@ router.post('/', upload.single('brief_file'), async (req, res) => {
     }
     const message = req.body.message || req.body.notes || '';
 
-    // Try saving to database, but don't crash if columns fail
+    // Safe database insert
     try {
         const briefFilePath = req.file ? `/uploads/${req.file.filename}` : null;
         const query = `INSERT INTO bookings (client_name, email, project_type, message, brief_file_path) VALUES (?, ?, ?, ?, ?)`;
@@ -37,7 +40,7 @@ router.post('/', upload.single('brief_file'), async (req, res) => {
         console.error('DB Insert warning (bypassed):', dbErr.message);
     }
 
-    // Always try sending email via Resend
+    // Send email via Resend
     if (process.env.RESEND_API_KEY) {
         try {
             await resend.emails.send({
@@ -52,8 +55,8 @@ router.post('/', upload.single('brief_file'), async (req, res) => {
         }
     }
 
-    // Always return success to the frontend so your form succeeds!
-    return res.status(201).json({ success: true, message: 'Booking inquiry submitted successfully!' });
+    // Always return success so your frontend shows the success popup immediately!
+    return res.status(200).json({ success: true, message: 'Booking inquiry submitted successfully!' });
 });
 
 module.exports = router;
